@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
 from app.nodes.refund_handler import handle_refund
 from app.nodes.order_tracker import track_order
 from app.state import SupportState
@@ -8,15 +9,19 @@ from app.graph.router import route_by_intent
 from app.nodes.faq_handler import handle_faq
 
 
-def placeholder_node(state: SupportState) -> dict:
+def save_conversation(state: SupportState) -> dict:
+    message = f"Customer: {state['user_message']}"
+    response = f"Assistant: {state.get('response', '')}"
+
     return {
-        "response": f"Request routed to: {state['intent']}"
+        "conversation_history": [message, response]
     }
 
 
 builder = StateGraph(SupportState)
 
 builder.add_node("classify_intent", classify_intent)
+builder.add_node("save_conversation", save_conversation)
 
 for route in [
     "faq",
@@ -69,6 +74,11 @@ for route in [
     "complaint",
     "human_support",
 ]:
-    builder.add_edge(route, END)
 
-support_graph = builder.compile()
+    builder.add_edge(route, "save_conversation")
+
+builder.add_edge("save_conversation", END)
+
+
+memory = MemorySaver()
+support_graph = builder.compile(checkpointer=memory)

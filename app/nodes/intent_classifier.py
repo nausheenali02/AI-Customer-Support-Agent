@@ -78,4 +78,7 @@ Intent:
     if intent not in valid_intents:
         intent = "faq"
 
-    return {"intent": intent}
+    return {
+    "intent": intent,
+    "order_id": state.get("order_id"),
+   }
