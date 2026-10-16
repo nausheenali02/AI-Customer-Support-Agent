@@ -1,0 +1,23 @@
+Customer Support FAQ
+
+1. Order Tracking
+Customers can track their orders by providing their order ID.
+The order ID format is ORD followed by digits.
+
+2. Delivery
+Orders marked as Shipped are on their way to the customer.
+Orders marked as Processing are being prepared.
+Estimated delivery dates may change.
+
+3. Refund Policy
+Delivered orders are eligible to request a refund within 7 days of delivery.
+Refund eligibility does not mean the refund has already been issued.
+Orders that have not been delivered may require a support agent to check cancellation options.
+
+4. Complaints
+Customers can report damaged or incorrect items.
+A support ticket is created when a complaint is registered.
+The ticket initially has an Open status.
+
+5. Human Support
+Customers can request human support if their issue cannot be resolved by the automated assistant.

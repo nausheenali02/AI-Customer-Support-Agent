@@ -4,3 +4,5 @@ __pycache__/
 *.py[cod]
 .DS_Store
 .chroma/
+data/orders.db
+data/chroma_db/
