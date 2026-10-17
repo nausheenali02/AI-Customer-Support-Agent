@@ -1,9 +1,13 @@
 
 import uuid
+
 import streamlit as st
+from google.genai import errors
 
 from app.graph.workflow import support_graph
 
+
+# Page configuration
 st.set_page_config(
     page_title="AI Customer Support Agent",
     page_icon="🤖",
@@ -13,21 +17,26 @@ st.set_page_config(
 st.title("🤖 AI Customer Support Agent")
 st.caption("Ask us about orders, refunds, FAQs, or complaints.")
 
+
 # Create a conversation ID for this browser session
 if "thread_id" not in st.session_state:
     st.session_state.thread_id = str(uuid.uuid4())
 
+
 # Store messages for displaying the chat
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
 
 # Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 # Accept a new message
 if prompt := st.chat_input("How can I help you today?"):
+
     st.session_state.messages.append(
         {"role": "user", "content": prompt}
     )
@@ -58,12 +67,24 @@ if prompt := st.chat_input("How can I help you today?"):
                     "Please try again."
                 )
 
-            except Exception as e:
-               st.error(f"Error details: {e}")
-               response = (
-                "Sorry, something went wrong while processing "
-                "your request. Please check the error above."
-              )
+            except errors.APIError as e:
+                if e.code == 429:
+                    response = (
+                        "The AI service has reached its current "
+                        "usage limit or is receiving too many requests. "
+                        "Please try again later."
+                    )
+                else:
+                    response = (
+                        "The AI service is temporarily unavailable. "
+                        "Please try again shortly."
+                    )
+
+            except Exception:
+                response = (
+                    "Sorry, something went wrong while processing "
+                    "your request. Please try again."
+                )
 
             st.markdown(response)
 

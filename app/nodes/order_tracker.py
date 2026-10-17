@@ -1,3 +1,4 @@
+
 import re
 
 from app.state import SupportState
@@ -7,13 +8,14 @@ from app.tools.order_tool import get_order
 def track_order(state: SupportState) -> dict:
     message = state["user_message"]
 
-    # Use an order ID already present in the state, if available.
-    order_id = state.get("order_id")
+    # Prefer an order ID mentioned in the current message.
+    match = re.search(r"\bORD\d+\b", message, re.IGNORECASE)
 
-    # Otherwise, extract an ID like ORD1001 from the message.
-    if not order_id:
-        match = re.search(r"\bORD\d+\b", message, re.IGNORECASE)
-        order_id = match.group(0).upper() if match else None
+    if match:
+        order_id = match.group(0).upper()
+    else:
+        # Reuse the remembered ID for follow-up questions.
+        order_id = state.get("order_id")
 
     if not order_id:
         return {
@@ -37,4 +39,3 @@ def track_order(state: SupportState) -> dict:
             f"Estimated delivery: {order['estimated_delivery']}."
         ),
     }
-

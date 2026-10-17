@@ -1,3 +1,5 @@
+
+import re
 from datetime import date, datetime
 
 from app.state import SupportState
@@ -6,14 +8,15 @@ from app.tools.order_tool import get_order
 
 def handle_refund(state: SupportState) -> dict:
     message = state["user_message"]
-    order_id = state.get("order_id")
 
-    # Extract order ID from the customer's message if needed.
-    import re
+    # Prefer the order ID mentioned in the current message.
+    match = re.search(r"\bORD\d+\b", message, re.IGNORECASE)
 
-    if not order_id:
-        match = re.search(r"\bORD\d+\b", message, re.IGNORECASE)
-        order_id = match.group(0).upper() if match else None
+    if match:
+        order_id = match.group(0).upper()
+    else:
+        # Use the remembered order ID for follow-up messages.
+        order_id = state.get("order_id")
 
     if not order_id:
         return {
