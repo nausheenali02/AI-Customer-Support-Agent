@@ -31,11 +31,27 @@ def track_order(state: SupportState) -> dict:
             "response": order["error"],
         }
 
-    return {
-        "order_id": order_id,
-        "response": (
+    # Answer delivery-date follow-up questions directly.
+    delivery_questions = [
+        "when will it arrive",
+        "when will it be delivered",
+        "delivery date",
+        "when can i expect it",
+    ]
+
+    if any(word in message.lower() for word in delivery_questions):
+        response = (
+            f"Your order {order_id} is expected to arrive on "
+            f"{order['estimated_delivery']}."
+        )
+    else:
+        response = (
             f"Your order {order['order_id']} for {order['item']} "
             f"is currently {order['status']}. "
             f"Estimated delivery: {order['estimated_delivery']}."
-        ),
+        )
+
+    return {
+        "order_id": order_id,
+        "response": response,
     }
