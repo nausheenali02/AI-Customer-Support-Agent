@@ -48,7 +48,10 @@ EXAMPLES:
 Return ONLY the intent name.
 Do not include explanations, punctuation, or extra text.
 
-Customer message: {state['user_message']}
+Conversation history:
+{chr(10).join(state.get('conversation_history', []))}
+
+Current customer message: {state['user_message']}
 
 Intent:
 """
